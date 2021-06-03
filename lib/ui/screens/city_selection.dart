@@ -12,29 +12,38 @@ class _CitySelectionState extends State<CitySelection> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('City'),
+        title: Text('Search'),
       ),
       body: Form(
-        child: Row(
+        child: Column(
           children: [
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(left: 10.0),
-                child: TextFormField(
-                  controller: _textController,
-                  decoration: InputDecoration(
-                    labelText: 'City',
-                    hintText: 'Chicago',
-                  ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
+              child: TextFormField(
+                controller: _textController,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.grey.shade300,
+                  labelText: 'City',
+                  hintText: 'Chicago',
                 ),
               ),
             ),
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () {
-                Navigator.pop(context, _textController.text);
-              },
-            )
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Theme.of(context).primaryColor,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context, _textController.text);
+                  },
+                  child: Text('SEARCH'),
+                ),
+              ),
+            ),
           ],
         ),
       ),

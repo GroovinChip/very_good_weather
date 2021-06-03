@@ -19,7 +19,7 @@ class App extends StatelessWidget {
     return BlocBuilder<ThemeBloc, ThemeState>(
       builder: (context, themeState) {
         return MaterialApp(
-          title: 'Flutter Weather',
+          title: 'Very Good Weather',
           theme: themeState.theme,
           home: BlocProvider(
             create: (context) =>

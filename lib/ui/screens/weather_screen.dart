@@ -33,7 +33,7 @@ class _WeatherState extends State<Weather> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter Weather'),
+        title: Text('Very Good Weather'),
         actions: [
           IconButton(
             icon: Icon(Icons.settings),
@@ -44,21 +44,6 @@ class _WeatherState extends State<Weather> {
                   builder: (context) => Settings(),
                 ),
               );
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () async {
-              final city = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CitySelection(),
-                ),
-              );
-              if (city != null) {
-                BlocProvider.of<WeatherBloc>(context)
-                    .add(WeatherRequested(city: city));
-              }
             },
           ),
         ],
@@ -76,7 +61,12 @@ class _WeatherState extends State<Weather> {
           },
           builder: (context, state) {
             if (state is WeatherInitial) {
-              return Center(child: Text('Please Select a Location'));
+              return Center(
+                child: Text(
+                  'Please Select a Location',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+              );
             }
             if (state is WeatherLoadInProgress) {
               return Center(child: CircularProgressIndicator());
@@ -131,6 +121,23 @@ class _WeatherState extends State<Weather> {
             throw Exception('Uh oh');
           },
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Theme.of(context).primaryColor,
+        onPressed: () async {
+          final city = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CitySelection(),
+            ),
+          );
+          if (city != null) {
+            BlocProvider.of<WeatherBloc>(context)
+                .add(WeatherRequested(city: city));
+          }
+        },
+        label: Text('Search'),
+        icon: Icon(Icons.search),
       ),
     );
   }
