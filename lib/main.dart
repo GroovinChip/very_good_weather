@@ -25,7 +25,9 @@ void main() {
           create: (context) => SettingsBloc(),
         ),
       ],
-      child: App(weatherRepository: weatherRepository),
+      child: App(
+        weatherRepository: weatherRepository,
+      ),
     ),
   );
 }
