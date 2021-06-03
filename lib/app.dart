@@ -7,9 +7,12 @@ import 'package:very_good_weather/state/theme_state.dart';
 import 'package:very_good_weather/ui/screens/weather_screen.dart';
 
 class App extends StatelessWidget {
-  final WeatherRepository weatherRepository;
+  App({
+    Key? key,
+    required this.weatherRepository,
+  }) : super(key: key);
 
-  App({Key? key, required this.weatherRepository}) : super(key: key);
+  final WeatherRepository weatherRepository;
 
   @override
   Widget build(BuildContext context) {
