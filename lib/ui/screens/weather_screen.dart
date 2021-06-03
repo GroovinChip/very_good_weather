@@ -6,7 +6,7 @@ import 'package:very_good_weather/state/blocs/theme_bloc.dart';
 import 'package:very_good_weather/state/blocs/weather_bloc.dart';
 import 'package:very_good_weather/state/blocs/weather_state.dart';
 import 'package:very_good_weather/state/theme_event.dart';
-import 'package:very_good_weather/state/theme_state.dart';
+import 'package:very_good_weather/state/events/theme_state.dart';
 import 'package:very_good_weather/state/weather_event.dart';
 import 'package:very_good_weather/ui/screens/city_selection.dart';
 import 'package:very_good_weather/ui/screens/settings_screen.dart';

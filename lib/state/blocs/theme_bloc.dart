@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:very_good_weather/api/weather_conditions.dart';
 import 'package:very_good_weather/state/theme_event.dart';
-import 'package:very_good_weather/state/theme_state.dart';
+import 'package:very_good_weather/state/events/theme_state.dart';
 
 class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
   ThemeBloc()

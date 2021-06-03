@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:very_good_weather/api/models/models.dart';
 import 'package:very_good_weather/state/blocs/settings_bloc.dart';
-import 'package:very_good_weather/state/settings_state.dart';
+import 'package:very_good_weather/state/events/settings_state.dart';
 import 'package:very_good_weather/ui/widgets/temperature.dart';
 import 'package:very_good_weather/ui/widgets/weather_conditions.dart';
 

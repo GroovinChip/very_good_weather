@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:very_good_weather/state/blocs/settings_bloc.dart';
 import 'package:very_good_weather/state/settings_event.dart';
-import 'package:very_good_weather/state/settings_state.dart';
+import 'package:very_good_weather/state/events/settings_state.dart';
 
 class Settings extends StatelessWidget {
   @override

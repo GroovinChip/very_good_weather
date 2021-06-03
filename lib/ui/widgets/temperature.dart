@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:very_good_weather/state/settings_state.dart';
+import 'package:very_good_weather/state/events/settings_state.dart';
 
 class Temperature extends StatelessWidget {
   final double temperature;
