@@ -1,6 +1,14 @@
-import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 import 'package:very_good_weather/api/models/weather.dart';
+
+enum WeatherStatus { initial, loading, success, failure }
+
+extension WeatherStatusX on WeatherStatus {
+  bool get isInitial => this == WeatherStatus.initial;
+  bool get isLoading => this == WeatherStatus.loading;
+  bool get isSuccess => this == WeatherStatus.success;
+  bool get isFailure => this == WeatherStatus.failure;
+}
 
 abstract class WeatherState extends Equatable {
   const WeatherState();

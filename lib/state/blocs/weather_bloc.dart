@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:very_good_weather/api/models/weather.dart';
 import 'package:very_good_weather/api/weather_repository.dart';
-import 'package:very_good_weather/state/blocs/weather_state.dart';
+import 'package:very_good_weather/state/weather_state.dart';
 import 'package:very_good_weather/state/events/weather_event.dart';
 
 class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {

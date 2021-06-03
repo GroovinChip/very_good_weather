@@ -1,8 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:very_good_weather/api/models/models.dart';
+import 'package:very_good_weather/state/blocs/settings_bloc.dart';
+import 'package:very_good_weather/state/blocs/theme_bloc.dart';
+import 'package:very_good_weather/state/events/settings_state.dart';
+import 'package:very_good_weather/state/weather_state.dart';
 
 void main() {
   File? file;
@@ -21,5 +26,64 @@ void main() {
 
   test('Location title', () {
     expect(weather!.location, 'London');
+  });
+
+  group('SettingsBloc', () {
+    late SettingsBloc settingsBloc;
+
+    setUp(() {
+      settingsBloc = SettingsBloc();
+    });
+
+    test('Initial state', () {
+      expect(settingsBloc.state.temperatureUnits, TemperatureUnits.celsius);
+    });
+  });
+
+  group('ThemeBloc', () {
+    late ThemeBloc themeBloc;
+
+    setUp(() {
+      themeBloc = ThemeBloc();
+    });
+
+    test('Initial state', () {
+      expect(themeBloc.state.theme, ThemeData.light());
+      expect(themeBloc.state.color, Colors.lightBlue);
+    });
+  });
+
+  group('WeatherStatusX', () {
+    test('returns correct values for WeatherStatus.initial', () {
+      const status = WeatherStatus.initial;
+      expect(status.isInitial, isTrue);
+      expect(status.isLoading, isFalse);
+      expect(status.isSuccess, isFalse);
+      expect(status.isFailure, isFalse);
+    });
+
+    test('returns correct values for WeatherStatus.loading', () {
+      const status = WeatherStatus.loading;
+      expect(status.isInitial, isFalse);
+      expect(status.isLoading, isTrue);
+      expect(status.isSuccess, isFalse);
+      expect(status.isFailure, isFalse);
+    });
+
+    test('returns correct values for WeatherStatus.success', () {
+      const status = WeatherStatus.success;
+      expect(status.isInitial, isFalse);
+      expect(status.isLoading, isFalse);
+      expect(status.isSuccess, isTrue);
+      expect(status.isFailure, isFalse);
+    });
+
+    test('returns correct values for WeatherStatus.failure', () {
+      const status = WeatherStatus.failure;
+      expect(status.isInitial, isFalse);
+      expect(status.isLoading, isFalse);
+      expect(status.isSuccess, isFalse);
+      expect(status.isFailure, isTrue);
+    });
   });
 }
