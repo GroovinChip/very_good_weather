@@ -1,113 +1,468 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
+import 'package:very_good_weather/api/meta_weather.dart';
+import 'package:very_good_weather/api/weather_conditions.dart';
+import 'package:very_good_weather/api/weather_repository.dart';
+import 'package:very_good_weather/presentation/bloc_observer.dart';
+import 'package:very_good_weather/api/models/models.dart' as model;
+import 'package:very_good_weather/state/blocs/settings_bloc.dart';
+import 'package:very_good_weather/state/blocs/theme_bloc.dart';
+import 'package:very_good_weather/state/blocs/weather_bloc.dart';
+import 'package:very_good_weather/state/blocs/weather_state.dart';
+import 'package:very_good_weather/state/settings_event.dart';
+import 'package:very_good_weather/state/settings_state.dart';
+import 'package:very_good_weather/state/theme_event.dart';
+import 'package:very_good_weather/state/theme_state.dart';
+import 'package:very_good_weather/state/weather_event.dart';
+import 'dart:async';
 
 void main() {
-  runApp(MyApp());
+  final WeatherRepository weatherRepository = WeatherRepository(
+    weatherApiClient: MetaWeather(
+      httpClient: http.Client(),
+    ),
+  );
+  Bloc.observer = SimpleBlocObserver();
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider<ThemeBloc>(
+          create: (context) => ThemeBloc(),
+        ),
+        BlocProvider<SettingsBloc>(
+          create: (context) => SettingsBloc(),
+        ),
+      ],
+      child: App(weatherRepository: weatherRepository),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class App extends StatelessWidget {
+  final WeatherRepository weatherRepository;
+
+  App({Key? key, required this.weatherRepository}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+    return BlocBuilder<ThemeBloc, ThemeState>(
+      builder: (context, themeState) {
+        return MaterialApp(
+          title: 'Flutter Weather',
+          theme: themeState.theme,
+          home: BlocProvider(
+            create: (context) =>
+                WeatherBloc(weatherRepository: weatherRepository),
+            child: Weather(),
+          ),
+        );
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
+class Weather extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<Weather> createState() => _WeatherState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _WeatherState extends State<Weather> {
+  late Completer<void> _refreshCompleter;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _refreshCompleter = Completer<void>();
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text('Flutter Weather'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Settings(),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () async {
+              final city = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CitySelection(),
+                ),
+              );
+              if (city != null) {
+                BlocProvider.of<WeatherBloc>(context)
+                    .add(WeatherRequested(city: city));
+              }
+            },
+          ),
+        ],
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
+        child: BlocConsumer<WeatherBloc, WeatherState>(
+          listener: (context, state) {
+            if (state is WeatherLoadSuccess) {
+              BlocProvider.of<ThemeBloc>(context).add(
+                WeatherChanged(condition: state.weather.condition!),
+              );
+              _refreshCompleter.complete();
+              _refreshCompleter = Completer();
+            }
+          },
+          builder: (context, state) {
+            if (state is WeatherInitial) {
+              return Center(child: Text('Please Select a Location'));
+            }
+            if (state is WeatherLoadInProgress) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (state is WeatherLoadSuccess) {
+              final weather = state.weather;
+
+              return BlocBuilder<ThemeBloc, ThemeState>(
+                builder: (context, themeState) {
+                  return GradientContainer(
+                    color: themeState.color,
+                    child: RefreshIndicator(
+                      onRefresh: () {
+                        BlocProvider.of<WeatherBloc>(context).add(
+                          WeatherRefreshRequested(city: weather.location!),
+                        );
+                        return _refreshCompleter.future;
+                      },
+                      child: ListView(
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.only(top: 100.0),
+                            child: Center(
+                              child: Location(location: weather.location!),
+                            ),
+                          ),
+                          Center(
+                            child: LastUpdated(dateTime: weather.lastUpdated!),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 50.0),
+                            child: Center(
+                              child: CombinedWeatherTemperature(
+                                weather: weather,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            }
+            if (state is WeatherLoadFailure) {
+              return Text(
+                'Something went wrong!',
+                style: TextStyle(color: Colors.red),
+              );
+            }
+
+            throw Exception('Uh oh');
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class Location extends StatelessWidget {
+  final String location;
+
+  Location({Key? key, required this.location}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      location,
+      style: TextStyle(
+        fontSize: 30,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+    );
+  }
+}
+
+class LastUpdated extends StatelessWidget {
+  final DateTime dateTime;
+
+  LastUpdated({Key? key, required this.dateTime}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      'Updated: ${TimeOfDay.fromDateTime(dateTime).format(context)}',
+      style: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w200,
+        color: Colors.white,
+      ),
+    );
+  }
+}
+
+class CombinedWeatherTemperature extends StatelessWidget {
+  final model.Weather weather;
+
+  CombinedWeatherTemperature({
+    Key? key,
+    required this.weather,
+  })  : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+            Padding(
+              padding: EdgeInsets.all(20.0),
+              child: WeatherConditions(condition: weather.condition!),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+            Padding(
+              padding: EdgeInsets.all(20.0),
+              child: BlocBuilder<SettingsBloc, SettingsState>(
+                builder: (context, state) {
+                  return Temperature(
+                    temperature: weather.temp!,
+                    high: weather.maxTemp!,
+                    low: weather.minTemp!,
+                    units: state.temperatureUnits,
+                  );
+                },
+              ),
             ),
           ],
         ),
+        Center(
+          child: Text(
+            weather.formattedCondition!,
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w200,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class WeatherConditions extends StatelessWidget {
+  final WeatherCondition condition;
+
+  WeatherConditions({Key? key, required this.condition}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => _mapConditionToImage(condition);
+
+  Image _mapConditionToImage(WeatherCondition condition) {
+    Image image;
+    switch (condition) {
+      case WeatherCondition.clear:
+      case WeatherCondition.lightCloud:
+        image = Image.asset('assets/clear.png');
+        break;
+      case WeatherCondition.hail:
+      case WeatherCondition.snow:
+      case WeatherCondition.sleet:
+        image = Image.asset('assets/snow.png');
+        break;
+      case WeatherCondition.heavyCloud:
+        image = Image.asset('assets/cloudy.png');
+        break;
+      case WeatherCondition.heavyRain:
+      case WeatherCondition.lightRain:
+      case WeatherCondition.showers:
+        image = Image.asset('assets/rainy.png');
+        break;
+      case WeatherCondition.thunderstorm:
+        image = Image.asset('assets/thunderstorm.png');
+        break;
+      case WeatherCondition.unknown:
+        image = Image.asset('assets/clear.png');
+        break;
+    }
+    return image;
+  }
+}
+
+class Temperature extends StatelessWidget {
+  final double temperature;
+  final double low;
+  final double high;
+  final TemperatureUnits units;
+
+  Temperature({
+    Key? key,
+    required this.temperature,
+    required this.low,
+    required this.high,
+    required this.units,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Padding(
+          padding: EdgeInsets.only(right: 20.0),
+          child: Text(
+            '${_formattedTemperature(temperature)}°',
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        Column(
+          children: [
+            Text(
+              'max: ${_formattedTemperature(high)}°',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w100,
+                color: Colors.white,
+              ),
+            ),
+            Text(
+              'min: ${_formattedTemperature(low)}°',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w100,
+                color: Colors.white,
+              ),
+            )
+          ],
+        )
+      ],
+    );
+  }
+
+  int _toFahrenheit(double celsius) => ((celsius * 9 / 5) + 32).round();
+
+  int _formattedTemperature(double t) =>
+      units == TemperatureUnits.fahrenheit ? _toFahrenheit(t) : t.round();
+}
+
+class CitySelection extends StatefulWidget {
+  @override
+  State<CitySelection> createState() => _CitySelectionState();
+}
+
+class _CitySelectionState extends State<CitySelection> {
+  final TextEditingController _textController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('City'),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      body: Form(
+        child: Row(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(left: 10.0),
+                child: TextFormField(
+                  controller: _textController,
+                  decoration: InputDecoration(
+                    labelText: 'City',
+                    hintText: 'Chicago',
+                  ),
+                ),
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {
+                Navigator.pop(context, _textController.text);
+              },
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class GradientContainer extends StatelessWidget {
+  final Widget child;
+  final MaterialColor color;
+
+  const GradientContainer({
+    Key? key,
+    required this.color,
+    required this.child,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: [0.6, 0.8, 1.0],
+          colors: [
+            color.shade700,
+            color.shade500,
+            color.shade300,
+          ],
+        ),
+      ),
+      child: child,
+    );
+  }
+}
+
+class Settings extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Settings')),
+      body: ListView(
+        children: <Widget>[
+          BlocBuilder<SettingsBloc, SettingsState>(
+              builder: (context, state) {
+                return ListTile(
+                  title: Text(
+                    'Temperature Units',
+                  ),
+                  isThreeLine: true,
+                  subtitle:
+                  Text('Use metric measurements for temperature units.'),
+                  trailing: Switch(
+                    value: state.temperatureUnits == TemperatureUnits.celsius,
+                    onChanged: (_) => BlocProvider.of<SettingsBloc>(context)
+                        .add(TemperatureUnitsToggled()),
+                  ),
+                );
+              }),
+        ],
+      ),
     );
   }
 }
