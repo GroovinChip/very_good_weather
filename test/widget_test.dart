@@ -1,30 +1,69 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+// ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:very_good_weather/main.dart';
+import 'package:very_good_weather/api/models/weather.dart';
+import 'package:very_good_weather/api/weather_conditions.dart';
+import 'package:very_good_weather/ui/widgets/combined_weather_temperature.dart';
+import 'package:very_good_weather/ui/widgets/gradient_container.dart';
+import 'package:very_good_weather/ui/widgets/last_updated.dart';
+import 'package:very_good_weather/ui/widgets/location.dart';
+import 'package:very_good_weather/ui/widgets/weather_conditions.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
+  group('Widgets', () {
+    testWidgets('Tests Location() widget', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Location(
+              location: 'Baltimore',
+            ),
+          ),
+        ),
+      );
+      expect(find.text('Baltimore'), findsOneWidget);
+    });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    testWidgets('Tests LastUpdated() widget', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: LastUpdated(
+              key: Key('last_updated'),
+              dateTime: DateTime.now(),
+            ),
+          ),
+        ),
+      );
+      expect(find.byKey(Key('last_updated')), findsOneWidget);
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    testWidgets('Tests GradientContainer() widget', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: GradientContainer(
+              color: Colors.red,
+              child: Text('Hello!'),
+            ),
+          ),
+        ),
+      );
+      expect(find.text('Hello!'), findsOneWidget);
+    });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    testWidgets('Tests WeatherConditions() widget', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: WeatherConditions(
+              key: Key('combined_weather_temperature'),
+              condition: WeatherCondition.clear,
+            ),
+          ),
+        ),
+      );
+      expect(find.byKey(Key('combined_weather_temperature')), findsOneWidget);
+    });
   });
 }
