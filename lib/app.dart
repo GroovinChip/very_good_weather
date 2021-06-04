@@ -21,6 +21,8 @@ class App extends StatelessWidget {
         return MaterialApp(
           title: 'Very Good Weather',
           theme: themeState.theme,
+          // I would add dark theme but it clashes with how the
+          // ThemeBloc handles theming
           home: BlocProvider(
             create: (context) => WeatherBloc(
               weatherRepository: weatherRepository,
