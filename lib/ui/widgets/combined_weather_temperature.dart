@@ -7,12 +7,12 @@ import 'package:very_good_weather/ui/widgets/temperature.dart';
 import 'package:very_good_weather/ui/widgets/weather_conditions.dart';
 
 class CombinedWeatherTemperature extends StatelessWidget {
-  final Weather weather;
-
   CombinedWeatherTemperature({
     Key? key,
     required this.weather,
   }) : super(key: key);
+
+  final Weather weather;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,6 @@ class CombinedWeatherTemperature extends StatelessWidget {
             style: TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.w200,
-              color: Colors.white,
             ),
           ),
         ),

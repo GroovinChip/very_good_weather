@@ -10,9 +10,17 @@ class _CitySelectionState extends State<CitySelection> {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).brightness == Brightness.dark
+        ? Colors.white
+        : Colors.black;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search'),
+        title: Text(
+          'Search',
+          style: TextStyle(
+            color: textColor,
+          ),
+        ),
       ),
       body: Form(
         child: Column(
@@ -22,8 +30,6 @@ class _CitySelectionState extends State<CitySelection> {
               child: TextFormField(
                 controller: _textController,
                 decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.grey.shade300,
                   labelText: 'City',
                   hintText: 'Chicago',
                 ),

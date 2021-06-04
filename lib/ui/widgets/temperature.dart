@@ -2,11 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:very_good_weather/state/events/settings_state.dart';
 
 class Temperature extends StatelessWidget {
-  final double temperature;
-  final double low;
-  final double high;
-  final TemperatureUnits units;
-
   Temperature({
     Key? key,
     required this.temperature,
@@ -14,6 +9,11 @@ class Temperature extends StatelessWidget {
     required this.high,
     required this.units,
   }) : super(key: key);
+
+  final double temperature;
+  final double low;
+  final double high;
+  final TemperatureUnits units;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,6 @@ class Temperature extends StatelessWidget {
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.w600,
-              color: Colors.white,
             ),
           ),
         ),
@@ -37,7 +36,6 @@ class Temperature extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w100,
-                color: Colors.white,
               ),
             ),
             Text(
@@ -45,7 +43,6 @@ class Temperature extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w100,
-                color: Colors.white,
               ),
             )
           ],

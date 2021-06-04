@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:very_good_weather/api/weather_repository.dart';
 import 'package:very_good_weather/state/blocs/theme_bloc.dart';
 import 'package:very_good_weather/state/blocs/weather_bloc.dart';
 import 'package:very_good_weather/state/theme_state.dart';
 import 'package:very_good_weather/ui/screens/weather_screen.dart';
+import 'package:very_good_weather/ui/themes.dart';
 
 class App extends StatelessWidget {
   App({
@@ -20,9 +22,10 @@ class App extends StatelessWidget {
       builder: (context, themeState) {
         return MaterialApp(
           title: 'Very Good Weather',
-          theme: themeState.theme,
-          // I would add dark theme but it clashes with how the
-          // ThemeBloc handles theming
+          //theme: themeState.theme,
+          theme: Themes.lightTheme,
+          darkTheme: Themes.darkTheme,
+          themeMode: ThemeMode.system,
           home: BlocProvider(
             create: (context) => WeatherBloc(
               weatherRepository: weatherRepository,

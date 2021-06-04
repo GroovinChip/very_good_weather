@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:very_good_weather/state/blocs/theme_bloc.dart';
 import 'package:very_good_weather/state/blocs/weather_bloc.dart';
@@ -31,22 +32,17 @@ class _WeatherState extends State<Weather> {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).brightness == Brightness.dark
+        ? Colors.white
+        : Colors.black;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Very Good Weather'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => Settings(),
-                ),
-              );
-            },
+        title: Text(
+          'Very Good Weather',
+          style: TextStyle(
+            color: textColor,
           ),
-        ],
+        ),
       ),
       body: Center(
         child: BlocConsumer<WeatherBloc, WeatherState>(
@@ -76,36 +72,33 @@ class _WeatherState extends State<Weather> {
 
               return BlocBuilder<ThemeBloc, ThemeState>(
                 builder: (context, themeState) {
-                  return GradientContainer(
-                    color: themeState.color,
-                    child: RefreshIndicator(
-                      onRefresh: () {
-                        BlocProvider.of<WeatherBloc>(context).add(
-                          WeatherRefreshRequested(city: weather.location!),
-                        );
-                        return _refreshCompleter.future;
-                      },
-                      child: ListView(
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.only(top: 100.0),
-                            child: Center(
-                              child: Location(location: weather.location!),
+                  return RefreshIndicator(
+                    onRefresh: () {
+                      BlocProvider.of<WeatherBloc>(context).add(
+                        WeatherRefreshRequested(city: weather.location!),
+                      );
+                      return _refreshCompleter.future;
+                    },
+                    child: ListView(
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(top: 100.0),
+                          child: Center(
+                            child: Location(location: weather.location!),
+                          ),
+                        ),
+                        Center(
+                          child: LastUpdated(dateTime: weather.lastUpdated!),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 50.0),
+                          child: Center(
+                            child: CombinedWeatherTemperature(
+                              weather: weather,
                             ),
                           ),
-                          Center(
-                            child: LastUpdated(dateTime: weather.lastUpdated!),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(vertical: 50.0),
-                            child: Center(
-                              child: CombinedWeatherTemperature(
-                                weather: weather,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   );
                 },
@@ -122,8 +115,25 @@ class _WeatherState extends State<Weather> {
           },
         ),
       ),
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          children: [
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Settings(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Theme.of(context).primaryColor,
         onPressed: () async {
           final city = await Navigator.push(
             context,

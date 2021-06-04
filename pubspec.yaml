@@ -13,6 +13,7 @@ dependencies:
   cupertino_icons: ^1.0.3
   freezed_annotation: ^0.14.2
   flutter_bloc: ^7.0.1
+  google_fonts: ^2.1.0
   http: ^0.13.3
   equatable: ^2.0.2
 

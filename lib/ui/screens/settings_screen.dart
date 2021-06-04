@@ -7,8 +7,18 @@ import 'package:very_good_weather/state/events/settings_state.dart';
 class Settings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).brightness == Brightness.dark
+        ? Colors.white
+        : Colors.black;
     return Scaffold(
-      appBar: AppBar(title: Text('Settings')),
+      appBar: AppBar(
+        title: Text(
+          'Settings',
+          style: TextStyle(
+            color: textColor,
+          ),
+        ),
+      ),
       body: ListView(
         children: <Widget>[
           BlocBuilder<SettingsBloc, SettingsState>(builder: (context, state) {
@@ -20,8 +30,9 @@ class Settings extends StatelessWidget {
               subtitle: Text('Use metric measurements for temperature units.'),
               trailing: Switch(
                 value: state.temperatureUnits == TemperatureUnits.celsius,
-                onChanged: (_) => BlocProvider.of<SettingsBloc>(context)
-                    .add(TemperatureUnitsToggled()),
+                onChanged: (_) => BlocProvider.of<SettingsBloc>(context).add(
+                  TemperatureUnitsToggled(),
+                ),
               ),
             );
           }),
