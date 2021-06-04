@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:very_good_weather/api/weather_conditions.dart';
 
+// I originally used freezed for models. I left them in.
 class Weather extends Equatable {
   const Weather({
     this.condition,
@@ -37,6 +38,7 @@ class Weather extends Equatable {
         location!,
       ];
 
+  // I would make this a factory
   static Weather fromJson(dynamic json) {
     final consolidatedWeather = json['consolidated_weather'][0];
     return Weather(
@@ -53,6 +55,7 @@ class Weather extends Equatable {
     );
   }
 
+  // I generally like to rely on static methods as little as possible
   static WeatherCondition _mapStringToWeatherCondition(String input) {
     WeatherCondition state;
     switch (input) {

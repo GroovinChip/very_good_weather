@@ -8,13 +8,17 @@ import 'package:very_good_weather/state/bloc_observer.dart';
 import 'package:very_good_weather/state/blocs/settings_bloc.dart';
 import 'package:very_good_weather/state/blocs/theme_bloc.dart';
 
+// Entry point
 void main() {
   final WeatherRepository weatherRepository = WeatherRepository(
     weatherApiClient: MetaWeather(
       httpClient: http.Client(),
     ),
   );
+
+  // Set up bloc observer so events can be observed
   Bloc.observer = SimpleBlocObserver();
+
   runApp(
     MultiBlocProvider(
       providers: [

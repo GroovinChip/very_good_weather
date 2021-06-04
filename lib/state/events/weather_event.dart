@@ -1,4 +1,3 @@
-import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class WeatherEvent extends Equatable {
@@ -17,9 +16,11 @@ class WeatherRequested extends WeatherEvent {
 }
 
 class WeatherRefreshRequested extends WeatherEvent {
-  final String city;
+  const WeatherRefreshRequested({
+    required this.city,
+  });
 
-  const WeatherRefreshRequested({required this.city});
+  final String city;
 
   @override
   List<Object> get props => [city];

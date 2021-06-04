@@ -6,9 +6,11 @@ abstract class ThemeEvent extends Equatable {
 }
 
 class WeatherChanged extends ThemeEvent {
-  final WeatherCondition condition;
+  const WeatherChanged({
+    required this.condition,
+  });
 
-  const WeatherChanged({required this.condition});
+  final WeatherCondition condition;
 
   @override
   List<Object> get props => [condition];
