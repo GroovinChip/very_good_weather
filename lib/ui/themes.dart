@@ -7,6 +7,7 @@ class Themes {
   static ThemeData get lightTheme => ThemeData(
         brightness: Brightness.light,
         primaryColor: Colors.indigo,
+        accentColor: Colors.indigoAccent,
         textTheme: GoogleFonts.openSansTextTheme(
           ThemeData.light().textTheme,
         ),
@@ -33,6 +34,7 @@ class Themes {
   static ThemeData get darkTheme => ThemeData(
         brightness: Brightness.dark,
         primaryColor: Colors.indigo,
+        accentColor: Colors.indigoAccent,
         appBarTheme: AppBarTheme(
           elevation: 0,
           centerTitle: true,

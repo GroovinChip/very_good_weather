@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:very_good_weather/ui/widgets/adaptive_app_bar.dart';
+import 'package:very_good_weather/ui/widgets/adaptive_city_icon.dart';
 
 class CitySelection extends StatefulWidget {
   @override
@@ -10,17 +14,9 @@ class _CitySelectionState extends State<CitySelection> {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = Theme.of(context).brightness == Brightness.dark
-        ? Colors.white
-        : Colors.black;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Search',
-          style: TextStyle(
-            color: textColor,
-          ),
-        ),
+      appBar: AdaptiveAppBar(
+        titleText: 'Search',
       ),
       body: Form(
         child: Column(
@@ -30,11 +26,15 @@ class _CitySelectionState extends State<CitySelection> {
               child: TextFormField(
                 controller: _textController,
                 decoration: InputDecoration(
+                  prefixIcon: AdaptiveCityIcon(),
                   labelText: 'City',
                   hintText: 'Chicago',
                 ),
               ),
             ),
+            if (Platform.isMacOS) ...[
+              const SizedBox(height: 8.0),
+            ],
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: SizedBox(

@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +14,9 @@ import 'package:very_good_weather/state/events/theme_event.dart';
 import 'package:very_good_weather/state/theme_state.dart';
 import 'package:very_good_weather/ui/screens/city_selection.dart';
 import 'package:very_good_weather/ui/screens/settings_screen.dart';
+import 'package:very_good_weather/ui/widgets/adaptive_app_bar.dart';
+import 'package:very_good_weather/ui/widgets/adaptive_search_icon.dart';
+import 'package:very_good_weather/ui/widgets/adaptive_settings_icon.dart';
 import 'package:very_good_weather/ui/widgets/combined_weather_temperature.dart';
 import 'package:very_good_weather/ui/widgets/gradient_container.dart';
 import 'package:very_good_weather/ui/widgets/last_updated.dart';
@@ -32,17 +38,9 @@ class _WeatherState extends State<Weather> {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = Theme.of(context).brightness == Brightness.dark
-        ? Colors.white
-        : Colors.black;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Very Good Weather',
-          style: TextStyle(
-            color: textColor,
-          ),
-        ),
+      appBar: AdaptiveAppBar(
+        titleText: 'Very Good Weather',
       ),
       body: Center(
         child: BlocConsumer<WeatherBloc, WeatherState>(
@@ -119,7 +117,7 @@ class _WeatherState extends State<Weather> {
         child: Row(
           children: [
             IconButton(
-              icon: Icon(Icons.settings),
+              icon: AdaptiveSettingsIcon(),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -147,8 +145,10 @@ class _WeatherState extends State<Weather> {
           }
         },
         label: Text('Search'),
-        icon: Icon(Icons.search),
+        icon: AdaptiveSearchIcon(),
       ),
     );
   }
 }
+
+

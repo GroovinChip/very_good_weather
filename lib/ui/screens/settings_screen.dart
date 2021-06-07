@@ -3,21 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:very_good_weather/state/blocs/settings_bloc.dart';
 import 'package:very_good_weather/state/settings_event.dart';
 import 'package:very_good_weather/state/events/settings_state.dart';
+import 'package:very_good_weather/ui/widgets/adaptive_app_bar.dart';
 
 class Settings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final textColor = Theme.of(context).brightness == Brightness.dark
-        ? Colors.white
-        : Colors.black;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Settings',
-          style: TextStyle(
-            color: textColor,
-          ),
-        ),
+      appBar: AdaptiveAppBar(
+        titleText: 'Settings',
       ),
       body: ListView(
         children: <Widget>[
@@ -28,7 +21,8 @@ class Settings extends StatelessWidget {
               ),
               isThreeLine: true,
               subtitle: Text('Use metric measurements for temperature units.'),
-              trailing: Switch(
+              trailing: Switch.adaptive(
+                activeColor: Theme.of(context).accentColor,
                 value: state.temperatureUnits == TemperatureUnits.celsius,
                 onChanged: (_) => BlocProvider.of<SettingsBloc>(context).add(
                   TemperatureUnitsToggled(),
